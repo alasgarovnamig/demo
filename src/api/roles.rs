@@ -1,7 +1,7 @@
 // src/api/roles.rs
 use actix_web::{get, post, put, delete, web, HttpResponse, HttpRequest, HttpMessage};
 use sea_orm::EntityTrait;
-use uuid::Uuid;
+// use uuid::Uuid;
 use crate::{AppState, error::AppError};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -66,7 +66,7 @@ pub async fn create_role(
 #[put("/{id}")]
 pub async fn update_role(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     req: web::Json<serde_json::Value>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
@@ -78,7 +78,7 @@ pub async fn update_role(
 #[delete("/{id}")]
 pub async fn delete_role(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     Ok(HttpResponse::Ok().json(serde_json::json!({
@@ -89,7 +89,7 @@ pub async fn delete_role(
 #[get("/{id}/permissions")]
 pub async fn get_role_permissions(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
 ) -> Result<HttpResponse, AppError> {
     let role_id = path.into_inner();
     let permissions = data.permission_service.get_role_permissions(role_id).await?;
@@ -100,7 +100,7 @@ pub async fn get_role_permissions(
 #[post("/{id}/permissions/{permission_id}")]
 pub async fn assign_permission_to_role(
     data: web::Data<AppState>,
-    path: web::Path<(Uuid, Uuid)>,
+    path: web::Path<(i32, i32)>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     // let claims = http_req.extensions().get::<crate::services::auth_service::Claims>().unwrap();

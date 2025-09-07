@@ -6,11 +6,11 @@ use uuid::Uuid;
 #[sea_orm(table_name = "partner_api_access")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
-    pub partner_id: Uuid,
-    pub api_permission_id: Uuid,
+    pub id: i32,
+    pub partner_id: i32,
+    pub api_permission_id: i32,
     pub is_granted: bool,
-    pub granted_by: Option<Uuid>,
+    pub granted_by: Option<i32>,
     pub granted_at: DateTime,
 }
 

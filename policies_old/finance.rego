@@ -1,4 +1,4 @@
-# policies/finance.rego
+# policies_old/finance.rego
 package finance
 
 import future.keywords.if

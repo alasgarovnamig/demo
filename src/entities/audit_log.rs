@@ -7,9 +7,9 @@ use uuid::Uuid;
 #[sea_orm(table_name = "audit_logs")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
-    pub user_id: Option<Uuid>,
-    pub partner_id: Option<Uuid>,
+    pub id: i32,
+    pub user_id: Option<i32>,
+    pub partner_id: Option<i32>,
     pub action: String,
     pub resource: String,
     pub resource_id: Option<String>,

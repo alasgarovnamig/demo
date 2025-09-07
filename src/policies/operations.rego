@@ -1,4 +1,4 @@
-# policies/operations.rego
+# policies_old/operations.rego
 package operations
 
 import future.keywords.if

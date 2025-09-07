@@ -8,7 +8,7 @@ use crate::entities::r#enum::permission_scope::PermissionScope;
 #[sea_orm(table_name = "permissions")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: i32,
     pub resource: String, // e.g., "partners", "users", "invoices"
     pub action: String, // e.g., "create", "read", "update", "delete"
     pub scope: PermissionScope,

@@ -17,7 +17,7 @@ services:
       - partner_network
 
   opa:
-    image: openpolicyagent/opa:latest-envoy
+    image: openpolicyagent/opa:latest-rootless  # Changed to rootless variant
     container_name: partner_opa
     ports:
       - "8181:8181"
@@ -40,24 +40,6 @@ services:
     networks:
       - partner_network
 
-#  app:
-#    build: .
-#    container_name: partner_app
-#    environment:
-#      DATABASE_URL: postgresql://partner_user:partner_pass@postgres/partner_system
-#      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
-#      OPA_URL: http://opa:8181
-#      REDIS_URL: redis://redis:6379
-#      SEED_DATA: "true"
-#      RUST_LOG: info
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - postgres
-#      - opa
-#      - redis
-#    networks:
-#      - partner_network
 
 networks:
   partner_network:

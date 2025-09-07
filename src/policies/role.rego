@@ -1,4 +1,4 @@
-# policies/role.rego
+# policies_old/role.rego
 package role
 
 import future.keywords.if

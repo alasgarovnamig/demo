@@ -1,4 +1,4 @@
-# policies/user.rego
+# policies_old/user.rego
 package user
 
 import future.keywords.if

@@ -1,20 +1,18 @@
 // src/services/partner_service.rs
 use sea_orm::{
-    DatabaseConnection, EntityTrait, ActiveModelTrait, Set, QueryFilter, ColumnTrait,
-    TransactionTrait, DbErr
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, NotSet, QueryFilter,
+    Set, TransactionTrait,
 };
-use uuid::Uuid;
-use crate::entities::{partner, user, role,r#enum};
+use crate::entities::{r#enum, partner, role, user};
 use crate::error::AppError;
 use serde::{Deserialize, Serialize};
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreatePartnerRequest {
     pub name: String,
     pub code: String,
     pub partner_type: r#enum::partner_type::PartnerType,
-    pub parent_partner_id: Option<Uuid>,
+    pub parent_partner_id: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -43,11 +41,10 @@ impl PartnerService {
         let txn = self.db.begin().await?;
 
         // Create partner
-        let partner_id = Uuid::new_v4();
         let partner = partner::ActiveModel {
-            id: Set(partner_id),
-            name: Set(req.name),
-            code: Set(req.code),
+            id: NotSet,
+            name: Set(req.name.clone()),
+            code: Set(req.code.clone()),
             partner_type: Set(req.partner_type),
             parent_partner_id: Set(req.parent_partner_id),
             is_main_partner: Set(false),
@@ -59,13 +56,12 @@ impl PartnerService {
 
         let partner_model = partner.insert(&txn).await?;
 
-        // Create admin user
+        // Create admin user - partner_model.id'yi kullanıyoruz
         let password_hash = self.auth_service.hash_password(&admin_req.password).await?;
         let admin_user = user::ActiveModel {
-            id: Set(Uuid::new_v4()),
-            partner_id: Set(partner_id),
+            id: NotSet,
+            partner_id: Set(partner_model.id), // ✅ Burada partner'ın ID'sini kullanıyoruz
             email: Set(admin_req.email),
-            username: Set(admin_req.username),
             password_hash: Set(password_hash),
             user_type: Set(r#enum::user_type::UserType::Admin),
             is_system_user: Set(false),
@@ -82,8 +78,8 @@ impl PartnerService {
 
         // Create default admin role for partner
         let admin_role = role::ActiveModel {
-            id: Set(Uuid::new_v4()),
-            partner_id: Set(Some(partner_id)),
+            id: NotSet,
+            partner_id: Set(Some(partner_model.id)),
             name: Set(format!("{} Admin", partner_model.name)),
             code: Set(format!("{}_admin", partner_model.code)),
             description: Set(Some("Partner admin role with full permissions".into())),
@@ -100,13 +96,13 @@ impl PartnerService {
         Ok(partner_model)
     }
 
-    pub async fn get_partner(&self, id: Uuid) -> Result<Option<partner::Model>, AppError> {
+    pub async fn get_partner(&self, id: i32) -> Result<Option<partner::Model>, AppError> {
         Ok(partner::Entity::find_by_id(id).one(&self.db).await?)
     }
 
     pub async fn list_partners(
         &self,
-        parent_id: Option<Uuid>,
+        parent_id: Option<i32>,
     ) -> Result<Vec<partner::Model>, AppError> {
         let mut query = partner::Entity::find();
 
@@ -119,7 +115,7 @@ impl PartnerService {
 
     pub async fn update_partner_status(
         &self,
-        id: Uuid,
+        id: i32,
         is_active: bool,
     ) -> Result<partner::Model, AppError> {
         let partner = partner::Entity::find_by_id(id)

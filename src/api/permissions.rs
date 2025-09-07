@@ -84,7 +84,7 @@ pub async fn create_api_permission(
 #[post("/api/{id}/grant/{partner_id}")]
 pub async fn grant_api_access(
     data: web::Data<AppState>,
-    path: web::Path<(uuid::Uuid, uuid::Uuid)>,
+    path: web::Path<(i32, i32)>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     // let claims = http_req.extensions().get::<crate::services::auth_service::Claims>().unwrap();

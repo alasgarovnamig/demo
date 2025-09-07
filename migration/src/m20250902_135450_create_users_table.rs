@@ -13,15 +13,22 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Users::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Users::Id).uuid().not_null().primary_key())
-                    .col(ColumnDef::new(Users::PartnerId).uuid().not_null())
+                    .col(
+                        ColumnDef::new(Users::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    // .col(ColumnDef::new(Users::Id).uuid().not_null().primary_key())
+                    .col(ColumnDef::new(Users::PartnerId).integer().not_null())
                     .col(
                         ColumnDef::new(Users::Email)
                             .string()
                             .not_null()
                             .unique_key(),
                     )
-                    .col(ColumnDef::new(Users::Username).string().not_null())
+                    // .col(ColumnDef::new(Users::Username).string().not_null())
                     .col(ColumnDef::new(Users::PasswordHash).string().not_null())
                     .col(ColumnDef::new(Users::UserType).string().not_null())
                     .col(
@@ -42,7 +49,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .default(false),
                     )
-                    .col(ColumnDef::new(Users::CreatedBy).uuid())
+                    .col(ColumnDef::new(Users::CreatedBy).integer())
                     .col(
                         ColumnDef::new(Users::IsActive)
                             .boolean()

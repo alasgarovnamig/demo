@@ -1,4 +1,4 @@
-# policies/authz.rego
+# policies_old/authz.rego
 package authz
 
 import future.keywords.if

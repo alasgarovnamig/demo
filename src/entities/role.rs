@@ -7,13 +7,13 @@ use uuid::Uuid;
 #[sea_orm(table_name = "roles")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
-    pub partner_id: Option<Uuid>, // Null for system roles
+    pub id: i32,
+    pub partner_id: Option<i32>, // Null for system roles
     pub name: String,
     pub code: String,
     pub description: Option<String>,
     pub is_system_role: bool,
-    pub created_by: Option<Uuid>,
+    pub created_by: Option<i32>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }

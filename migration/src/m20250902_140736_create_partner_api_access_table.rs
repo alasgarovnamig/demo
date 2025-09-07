@@ -16,18 +16,19 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(PartnerApiAccess::Id)
-                            .uuid()
+                            .integer()
                             .not_null()
+                            .auto_increment()
                             .primary_key(),
                     )
                     .col(
                         ColumnDef::new(PartnerApiAccess::PartnerId)
-                            .uuid()
+                            .integer()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(PartnerApiAccess::ApiPermissionId)
-                            .uuid()
+                            .integer()
                             .not_null(),
                     )
                     .col(
@@ -36,7 +37,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .default(true),
                     )
-                    .col(ColumnDef::new(PartnerApiAccess::GrantedBy).uuid())
+                    .col(ColumnDef::new(PartnerApiAccess::GrantedBy).integer())
                     .col(
                         ColumnDef::new(PartnerApiAccess::GrantedAt)
                             .timestamp()

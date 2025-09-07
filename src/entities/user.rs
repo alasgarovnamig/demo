@@ -8,16 +8,16 @@ use crate::entities::r#enum::user_type::UserType;
 #[sea_orm(table_name = "users")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
-    pub partner_id: Uuid,
+    pub id: i32,
+    pub partner_id: i32,
     pub email: String,
-    pub username: String,
+    // pub username: String,
     pub password_hash: String,
     pub user_type: UserType,
     pub is_system_user: bool, // For application users
     pub is_admin: bool, // Partner admin flag
     pub can_access_all_partners: bool, // For main partner users
-    pub created_by: Option<Uuid>,
+    pub created_by: Option<i32>,
     pub is_active: bool,
     pub last_login: Option<DateTime>,
     pub created_at: DateTime,

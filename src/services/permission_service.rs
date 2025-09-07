@@ -1,13 +1,12 @@
 // src/services/permission_service.rs
-use sea_orm::{
-    DatabaseConnection, EntityTrait, ActiveModelTrait, Set, QueryFilter, ColumnTrait,
-    TransactionTrait, QuerySelect
-};
-use uuid::Uuid;
+use sea_orm::{DatabaseConnection, EntityTrait, ActiveModelTrait, Set, QueryFilter, ColumnTrait, TransactionTrait, QuerySelect, NotSet};
+// use uuid::Uuid;
 use crate::entities::{permission, role, role_permission, api_permission, partner_api_access,r#enum};
 use crate::error::AppError;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use sea_orm::sea_query::UnOper;
+use sea_orm::sqlx::encode::IsNull::No;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreatePermissionRequest {
@@ -23,7 +22,7 @@ pub struct CreateApiPermissionRequest {
     pub endpoint: String,
     pub method: r#enum::http_method::HttpMethod,
     pub module: String,
-    pub required_permissions: Vec<Uuid>,
+    pub required_permissions: Vec<i32>,
     pub description: Option<String>,
 }
 
@@ -42,7 +41,7 @@ impl PermissionService {
         req: CreatePermissionRequest,
     ) -> Result<permission::Model, AppError> {
         let permission = permission::ActiveModel {
-            id: Set(Uuid::new_v4()),
+            id: NotSet,
             resource: Set(req.resource),
             action: Set(req.action),
             scope: Set(req.scope),
@@ -59,7 +58,7 @@ impl PermissionService {
         req: CreateApiPermissionRequest,
     ) -> Result<api_permission::Model, AppError> {
         let api_perm = api_permission::ActiveModel {
-            id: Set(Uuid::new_v4()),
+            id: NotSet,
             endpoint: Set(req.endpoint),
             method: Set(req.method),
             module: Set(req.module),
@@ -73,12 +72,12 @@ impl PermissionService {
 
     pub async fn grant_api_access_to_partner(
         &self,
-        partner_id: Uuid,
-        api_permission_id: Uuid,
-        granted_by: Uuid,
+        partner_id: i32,
+        api_permission_id: i32,
+        granted_by: i32,
     ) -> Result<(), AppError> {
         let access = partner_api_access::ActiveModel {
-            id: Set(Uuid::new_v4()),
+            id: NotSet,
             partner_id: Set(partner_id),
             api_permission_id: Set(api_permission_id),
             is_granted: Set(true),
@@ -92,7 +91,7 @@ impl PermissionService {
 
     pub async fn check_api_access(
         &self,
-        partner_id: Uuid,
+        partner_id: i32,
         endpoint: &str,
         method: &str,
     ) -> Result<bool, AppError> {
@@ -120,11 +119,11 @@ impl PermissionService {
 
     pub async fn assign_permission_to_role(
         &self,
-        role_id: Uuid,
-        permission_id: Uuid,
+        role_id: i32,
+        permission_id: i32,
     ) -> Result<(), AppError> {
         let role_perm = role_permission::ActiveModel {
-            id: Set(Uuid::new_v4()),
+            id:NotSet,
             role_id: Set(role_id),
             permission_id: Set(permission_id),
             granted_at: Set(chrono::Utc::now().naive_utc()),
@@ -136,7 +135,7 @@ impl PermissionService {
 
     pub async fn get_role_permissions(
         &self,
-        role_id: Uuid,
+        role_id: i32,
     ) -> Result<Vec<permission::Model>, AppError> {
         let perms = role_permission::Entity::find()
             .filter(role_permission::Column::RoleId.eq(role_id))

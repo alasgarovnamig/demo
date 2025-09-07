@@ -16,14 +16,15 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(RolePermissions::Id)
-                            .uuid()
+                            .integer()
                             .not_null()
+                            .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(RolePermissions::RoleId).uuid().not_null())
+                    .col(ColumnDef::new(RolePermissions::RoleId).integer().not_null())
                     .col(
                         ColumnDef::new(RolePermissions::PermissionId)
-                            .uuid()
+                            .integer()
                             .not_null(),
                     )
                     .col(

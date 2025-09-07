@@ -1,17 +1,17 @@
 // src/services/auth_service.rs
 use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter, ColumnTrait};
-use uuid::Uuid;
+// use uuid::Uuid;
 use bcrypt::{hash, verify, DEFAULT_COST};
 use jsonwebtoken::{encode, decode, Header, Validation, EncodingKey, DecodingKey};
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
-use crate::entities::{user, partner, role, permission, user_role, role_permission, r#enum};
+// use std::collections::HashSet;
+use crate::entities::{user, partner, role, permission, user_role, role_permission};
 use crate::error::AppError;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    pub sub: Uuid, // User ID
-    pub partner_id: Uuid,
+    pub sub: i32, // User ID
+    pub partner_id: i32,
     pub is_main_partner: bool,
     pub can_access_all_partners: bool,
     pub roles: Vec<String>,
@@ -95,7 +95,7 @@ impl AuthService {
         Ok(hash(password, DEFAULT_COST)?)
     }
 
-    async fn get_user_roles(&self, user_id: Uuid) -> Result<Vec<String>, AppError> {
+    async fn get_user_roles(&self, user_id: i32) -> Result<Vec<String>, AppError> {
         let roles = user_role::Entity::find()
             .filter(user_role::Column::UserId.eq(user_id))
             .find_also_related(role::Entity)
@@ -108,14 +108,14 @@ impl AuthService {
             .collect())
     }
 
-    async fn get_user_permissions(&self, user_id: Uuid) -> Result<Vec<PermissionClaim>, AppError> {
+    async fn get_user_permissions(&self, user_id: i32) -> Result<Vec<PermissionClaim>, AppError> {
         // Get user's roles
         let user_roles = user_role::Entity::find()
             .filter(user_role::Column::UserId.eq(user_id))
             .all(&self.db)
             .await?;
 
-        let role_ids: Vec<Uuid> = user_roles.iter().map(|ur| ur.role_id).collect();
+        let role_ids: Vec<i32> = user_roles.iter().map(|ur| ur.role_id).collect();
 
         // Get permissions for roles
         let role_permissions = role_permission::Entity::find()
@@ -143,7 +143,7 @@ impl AuthService {
         claims: &Claims,
         resource: &str,
         action: &str,
-        target_partner_id: Option<Uuid>,
+        target_partner_id: Option<i32>,
     ) -> Result<bool, AppError> {
         // Main partner users with full access
         if claims.is_main_partner && claims.can_access_all_partners {

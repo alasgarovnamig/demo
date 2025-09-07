@@ -127,7 +127,7 @@
 use serde::{Deserialize, Serialize};
 use reqwest::Client;
 use std::collections::HashMap;
-use uuid::Uuid;
+// use uuid::Uuid;
 use crate::error::AppError;
 use crate::services::auth_service::Claims;
 
@@ -146,8 +146,8 @@ pub struct OpaInput {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OpaUser {
-    pub id: Uuid,
-    pub partner_id: Uuid,
+    pub id: i32,
+    pub partner_id: i32,
     pub is_main_partner: bool,
     pub can_access_all_partners: bool,
     pub roles: Vec<String>,
@@ -158,7 +158,7 @@ pub struct OpaUser {
 pub struct OpaResource {
     pub resource_type: String,
     pub resource_id: Option<String>,
-    pub partner_id: Option<Uuid>,
+    pub partner_id: Option<i32>,
     pub attributes: HashMap<String, serde_json::Value>,
 }
 

@@ -6,10 +6,10 @@ use uuid::Uuid;
 #[sea_orm(table_name = "user_roles")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
-    pub user_id: Uuid,
-    pub role_id: Uuid,
-    pub assigned_by: Option<Uuid>,
+    pub id: i32,
+    pub user_id: i32,
+    pub role_id: i32,
+    pub assigned_by: Option<i32>,
     pub assigned_at: DateTime,
 }
 

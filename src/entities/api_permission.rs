@@ -8,7 +8,7 @@ use crate::entities::r#enum::http_method::HttpMethod;
 #[sea_orm(table_name = "api_permissions")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: i32,
     pub endpoint: String, // API endpoint pattern
     pub method: HttpMethod,
     pub module: String, // Module name

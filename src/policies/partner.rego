@@ -1,4 +1,4 @@
-# policies/partner.rego
+# policies_old/partner.rego
 package partner
 
 import future.keywords.if

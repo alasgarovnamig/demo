@@ -1,13 +1,13 @@
 // src/api/users.rs
 use actix_web::{get, post, put, delete, web, HttpResponse, HttpRequest, HttpMessage};
-use uuid::Uuid;
+// use uuid::Uuid;
 use crate::{AppState, error::AppError};
 use crate::services::auth_service::Claims;
 use crate::services::user_service::CreateUserRequest;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg
-        // .service(create_user)
+        .service(create_user)
         // .service(get_user)
         .service(update_user)
         .service(delete_user)
@@ -16,30 +16,31 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         // .service(get_user_permissions);
 }
 
-// #[post("")]
-// pub async fn create_user(
-//     data: web::Data<AppState>,
-//     req: web::Json<CreateUserRequest>,
-//     http_req: HttpRequest,
-// ) -> Result<HttpResponse, AppError> {
-//     let claims = http_req.extensions().get::<Claims>().unwrap();
-//
-//     // Determine partner_id
-//     let partner_id = if claims.can_access_all_partners {
-//         req.partner_id.unwrap_or(claims.partner_id)
-//     } else {
-//         claims.partner_id
-//     };
-//
-//     let user = data.user_service.create_user(
-//         partner_id,
-//         req.into_inner(),
-//         claims.sub,
-//         claims
-//     ).await?;
-//
-//     Ok(HttpResponse::Created().json(user))
-// }
+#[post("")]
+pub async fn create_user(
+    data: web::Data<AppState>,
+    req: web::Json<CreateUserRequest>,
+    http_req: HttpRequest,
+) -> Result<HttpResponse, AppError> {
+    let extensions = http_req.extensions();
+    let claims = extensions.get::<Claims>().unwrap();
+
+    // Determine partner_id
+    let partner_id = if claims.can_access_all_partners {
+        req.partner_id.unwrap_or(claims.partner_id)
+    } else {
+        claims.partner_id
+    };
+
+    let user = data.user_service.create_user(
+        partner_id,
+        req.into_inner(),
+        claims.sub,
+        claims
+    ).await?;
+
+    Ok(HttpResponse::Created().json(user))
+}
 
 // #[get("/{id}")]
 // pub async fn get_user(
@@ -69,7 +70,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 #[put("/{id}")]
 pub async fn update_user(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     req: web::Json<serde_json::Value>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
@@ -85,7 +86,7 @@ pub async fn update_user(
 #[delete("/{id}")]
 pub async fn delete_user(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     // let claims = http_req.extensions().get::<Claims>().unwrap();
@@ -108,7 +109,7 @@ pub async fn delete_user(
 #[post("/{id}/roles/{role_id}")]
 pub async fn assign_role_to_user(
     data: web::Data<AppState>,
-    path: web::Path<(Uuid, Uuid)>,
+    path: web::Path<(i32, i32)>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     // let claims = http_req.extensions().get::<Claims>().unwrap();
@@ -128,7 +129,7 @@ pub async fn assign_role_to_user(
 #[delete("/{id}/roles/{role_id}")]
 pub async fn remove_role_from_user(
     data: web::Data<AppState>,
-    path: web::Path<(Uuid, Uuid)>,
+    path: web::Path<(i32, i32)>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     let claims = http_req.extensions().get::<Claims>().unwrap();

@@ -1,4 +1,4 @@
-# policies/detailed_permissions.rego
+# policies_old/detailed_permissions.rego
 package detailed_permissions
 
 import future.keywords.if

@@ -12,7 +12,14 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Partners::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Partners::Id).uuid().not_null().primary_key())
+                    .col(
+                        ColumnDef::new(Partners::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    // .col(ColumnDef::new(Partners::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Partners::Name).string().not_null())
                     .col(
                         ColumnDef::new(Partners::Code)
@@ -21,7 +28,7 @@ impl MigrationTrait for Migration {
                             .unique_key(),
                     )
                     .col(ColumnDef::new(Partners::PartnerType).string().not_null())
-                    .col(ColumnDef::new(Partners::ParentPartnerId).uuid())
+                    .col(ColumnDef::new(Partners::ParentPartnerId).integer())
                     .col(
                         ColumnDef::new(Partners::IsMainPartner)
                             .boolean()

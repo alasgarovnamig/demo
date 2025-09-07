@@ -1,7 +1,7 @@
 // src/api/partners.rs
 use actix_web::{get, post, put, delete, web, HttpResponse, HttpRequest, HttpMessage};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
+// use uuid::Uuid;
 use crate::{AppState, error::AppError};
 use crate::services::auth_service::Claims;
 
@@ -20,7 +20,7 @@ pub struct CreatePartnerDto {
     pub name: String,
     pub code: String,
     pub partner_type: String,
-    pub parent_partner_id: Option<Uuid>,
+    pub parent_partner_id: Option<i32>,
     pub admin_email: String,
     pub admin_username: String,
     pub admin_password: String,
@@ -63,7 +63,7 @@ pub async fn create_partner(
 #[get("/{id}")]
 pub async fn get_partner(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     // let claims = http_req.extensions().get::<Claims>().unwrap();
@@ -108,7 +108,7 @@ pub async fn list_partners(
 #[put("/{id}")]
 pub async fn update_partner(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     req: web::Json<serde_json::Value>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
@@ -133,7 +133,7 @@ pub async fn update_partner(
 #[delete("/{id}")]
 pub async fn delete_partner(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     // let claims = http_req.extensions().get::<Claims>().unwrap();
@@ -163,7 +163,7 @@ pub async fn delete_partner(
 #[get("/{id}/users")]
 pub async fn get_partner_users(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     // let claims = http_req.extensions().get::<Claims>().unwrap();
@@ -180,7 +180,7 @@ pub async fn get_partner_users(
 #[get("/{id}/stats")]
 pub async fn get_partner_stats(
     data: web::Data<AppState>,
-    path: web::Path<Uuid>,
+    path: web::Path<i32>,
     http_req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
     // let claims = http_req.extensions().get::<Claims>().unwrap();

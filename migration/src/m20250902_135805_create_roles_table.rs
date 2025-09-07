@@ -13,8 +13,15 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Roles::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Roles::Id).uuid().not_null().primary_key())
-                    .col(ColumnDef::new(Roles::PartnerId).uuid())
+                    .col(
+                        ColumnDef::new(Roles::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    // .col(ColumnDef::new(Roles::Id).uuid().not_null().primary_key())
+                    .col(ColumnDef::new(Roles::PartnerId).integer())
                     .col(ColumnDef::new(Roles::Name).string().not_null())
                     .col(ColumnDef::new(Roles::Code).string().not_null().unique_key())
                     .col(ColumnDef::new(Roles::Description).string())
@@ -24,7 +31,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .default(false),
                     )
-                    .col(ColumnDef::new(Roles::CreatedBy).uuid())
+                    .col(ColumnDef::new(Roles::CreatedBy).integer())
                     .col(ColumnDef::new(Roles::CreatedAt).timestamp().not_null())
                     .col(ColumnDef::new(Roles::UpdatedAt).timestamp().not_null())
                     .foreign_key(

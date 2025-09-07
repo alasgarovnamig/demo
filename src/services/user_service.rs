@@ -1,9 +1,5 @@
 // src/services/user_service.rs
-use sea_orm::{
-    DatabaseConnection, EntityTrait, ActiveModelTrait, Set, QueryFilter, ColumnTrait,
-    TransactionTrait
-};
-use uuid::Uuid;
+use sea_orm::{DatabaseConnection, EntityTrait, ActiveModelTrait, Set, QueryFilter, ColumnTrait, TransactionTrait, NotSet};
 use crate::entities::{user, user_role, role,r#enum};
 use crate::services::auth_service::{AuthService, Claims};
 use serde::{Deserialize, Serialize};
@@ -12,11 +8,12 @@ use crate::error::AppError;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateUserRequest {
     pub email: String,
-    pub username: String,
+    // pub username: String,
     pub password: String,
     pub user_type: r#enum::user_type::UserType,
     pub is_system_user: bool,
-    pub role_ids: Vec<Uuid>,
+    pub role_ids: Vec<i32>,
+    pub partner_id: Option<i32>,
 }
 
 #[derive(Clone)]
@@ -32,9 +29,9 @@ impl UserService {
 
     pub async fn create_user(
         &self,
-        partner_id: Uuid,
+        partner_id: i32,
         req: CreateUserRequest,
-        created_by: Uuid,
+        created_by: i32,
         claims: &Claims,
     ) -> Result<user::Model, AppError> {
         // Check if creator can create users for this partner
@@ -46,13 +43,13 @@ impl UserService {
 
         // Create user
         let password_hash = self.auth_service.hash_password(&req.password).await?;
-        let user_id = Uuid::new_v4();
+        // let user_id = Uuid::new_v4();
 
         let new_user = user::ActiveModel {
-            id: Set(user_id),
+            id: NotSet,
             partner_id: Set(partner_id),
             email: Set(req.email),
-            username: Set(req.username),
+            // username: Set(req.username),
             password_hash: Set(password_hash),
             user_type: Set(req.user_type),
             is_system_user: Set(req.is_system_user),
@@ -80,8 +77,8 @@ impl UserService {
             }
 
             let user_role_model = user_role::ActiveModel {
-                id: Set(Uuid::new_v4()),
-                user_id: Set(user_id),
+                id: NotSet,
+                user_id: Set(user_model.id),
                 role_id: Set(role_id),
                 assigned_by: Set(Some(created_by)),
                 assigned_at: Set(chrono::Utc::now().naive_utc()),
@@ -97,7 +94,7 @@ impl UserService {
 
     pub async fn list_partner_users(
         &self,
-        partner_id: Uuid,
+        partner_id: i32,
         claims: &Claims,
     ) -> Result<Vec<user::Model>, AppError> {
         // Check access rights
@@ -113,9 +110,9 @@ impl UserService {
 
     pub async fn assign_role(
         &self,
-        user_id: Uuid,
-        role_id: Uuid,
-        assigned_by: Uuid,
+        user_id: i32,
+        role_id: i32,
+        assigned_by: i32,
         claims: &Claims,
     ) -> Result<(), AppError> {
         // Get user to check partner
@@ -149,7 +146,7 @@ impl UserService {
         }
 
         let user_role_model = user_role::ActiveModel {
-            id: Set(Uuid::new_v4()),
+            id: NotSet,
             user_id: Set(user_id),
             role_id: Set(role_id),
             assigned_by: Set(Some(assigned_by)),

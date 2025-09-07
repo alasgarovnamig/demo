@@ -16,13 +16,14 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(UserRoles::Id)
-                            .uuid()
+                            .integer()
                             .not_null()
+                            .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(UserRoles::UserId).uuid().not_null())
-                    .col(ColumnDef::new(UserRoles::RoleId).uuid().not_null())
-                    .col(ColumnDef::new(UserRoles::AssignedBy).uuid())
+                    .col(ColumnDef::new(UserRoles::UserId).integer().not_null())
+                    .col(ColumnDef::new(UserRoles::RoleId).integer().not_null())
+                    .col(ColumnDef::new(UserRoles::AssignedBy).integer())
                     .col(ColumnDef::new(UserRoles::AssignedAt).timestamp().not_null())
                     .foreign_key(
                         ForeignKey::create()

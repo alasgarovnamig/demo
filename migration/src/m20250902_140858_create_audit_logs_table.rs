@@ -16,12 +16,13 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(AuditLogs::Id)
-                            .uuid()
+                            .integer()
                             .not_null()
+                            .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(AuditLogs::UserId).uuid())
-                    .col(ColumnDef::new(AuditLogs::PartnerId).uuid())
+                    .col(ColumnDef::new(AuditLogs::UserId).integer())
+                    .col(ColumnDef::new(AuditLogs::PartnerId).integer())
                     .col(ColumnDef::new(AuditLogs::Action).string().not_null())
                     .col(ColumnDef::new(AuditLogs::Resource).string().not_null())
                     .col(ColumnDef::new(AuditLogs::ResourceId).string())

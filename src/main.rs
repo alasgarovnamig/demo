@@ -3,6 +3,8 @@ use dotenv::dotenv;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
 use std::env;
+use bcrypt::{hash, DEFAULT_COST};
+use crate::services::auth_service;
 
 mod entities;
 mod middleware;
@@ -12,7 +14,7 @@ mod api;
 mod error;
 mod seed;
 mod startup;
-
+// use crate::seed::SeedData;
 pub struct AppState {
     db: DatabaseConnection,
     auth_service: services::auth_service::AuthService,
@@ -26,6 +28,7 @@ pub struct AppState {
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
+
 
     // Database connection
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -48,18 +51,22 @@ async fn main() -> std::io::Result<()> {
     let user_service = services::user_service::UserService::new(db.clone(), auth_service.clone());
     let permission_service = services::permission_service::PermissionService::new(db.clone());
 
+    println!("{:?}", hash("Up@!735538?=@1993!".to_string(), DEFAULT_COST));
 
     // let opa_service = services::opa_service::OpaService::new(opa_url);
     // OPA servisini oluşturmak için opa_url'i clone'la
     let opa_url_clone = opa_url.clone();
     let opa_service = services::opa_service::OpaService::new(opa_url_clone);
 
-    // Seed initial data if needed
-    if env::var("SEED_DATA").unwrap_or_else(|_| "false".to_string()) == "true" {
-        seed::seed_initial_data(&db, &auth_service)
-            .await
-            .expect("Failed to seed data");
-    }
+    // // Seed initial data if needed
+    // if env::var("SEED_DATA").unwrap_or_else(|_| "false".to_string()) == "true" {
+    //     SeedData::seed_initial_data(&db, &auth_service)
+    //         .await
+    //         .expect("Failed to seed data");
+    //     // seed::seed_initial_data(&db, &auth_service)
+    //     //     .await
+    //     //     .expect("Failed to seed data");
+    // }
 
     // ✅ OPA'ya verileri yükle
     startup::initialize_opa_data(&db, opa_url)

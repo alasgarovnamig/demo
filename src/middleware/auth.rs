@@ -97,6 +97,8 @@ where
                 attributes: HashMap::new(),
             };
 
+            println!("{:?}", resource);
+
             let allowed = opa_service
                 .check_permission(&claims, method, resource)
                 .await
